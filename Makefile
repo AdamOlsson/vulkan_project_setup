@@ -1,10 +1,13 @@
 CXX = g++
 VULKAN_SDK = /Users/adamolsson/VulkanSDK/1.3.296.0/macOS
+VULKAN_INCLUDE_PATH = $(VULKAN_SDK)/include
 VULKAN_LIBRARY_PATH = $(VULKAN_SDK)/lib
-VULKAN_INCLUDE = $(VULKAN_SDK)/include
 VULKAN_LIBRARY = vulkan.1
 
-CXX_INCLUDE = -I$(VULKAN_INCLUDE)
+BREW_PATH = /opt/homebrew
+BREW_INCLUDE_PATH = $(BREW_PATH)/include
+BREW_LIBRARY_PATH = $(BREW_PATH)/lib
+GLFW_LIBRARY = glfw 
 
 TARGET = main
 SRC = src/main.cpp
@@ -12,8 +15,13 @@ SRC = src/main.cpp
 CXXFLAGS = $(CXX_INCLUDE) -std=c++17 -Wall -O2
 
 $(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) $(SRC) -o bin/$(TARGET) \
+	$(CXX) $(SRC) -o bin/$(TARGET) \
+		-I$(VULKAN_INCLUDE_PATH) \
 		-L$(VULKAN_LIBRARY_PATH) \
+		-l$(VULKAN_LIBRARY) \
 		-Wl,-rpath,$(VULKAN_LIBRARY_PATH) \
-		-l$(VULKAN_LIBRARY)
+		-I$(BREW_INCLUDE_PATH) \
+		-L$(BREW_LIBRARY_PATH) \
+		-l$(GLFW_LIBRARY) \
+		-Wl,-rpath,$(BREW_LIBRARY_PATH)
 
