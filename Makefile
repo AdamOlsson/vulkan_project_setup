@@ -12,7 +12,7 @@ GLFW_LIBRARY = glfw
 TARGET = main
 SRC = src/main.cpp
 
-CXXFLAGS = $(CXX_INCLUDE) -std=c++17 -Wall -O2
+CXXFLAGS = $(CXX_INCLUDE) -std=c++17 -Wall 
 
 $(TARGET): $(SRC)
 	$(CXX) $(CXXFLAGS) $(SRC) -o bin/$(TARGET) \
