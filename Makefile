@@ -15,7 +15,7 @@ SRC = src/main.cpp
 CXXFLAGS = $(CXX_INCLUDE) -std=c++17 -Wall -O2
 
 $(TARGET): $(SRC)
-	$(CXX) $(SRC) -o bin/$(TARGET) \
+	$(CXX) $(CXXFLAGS) $(SRC) -o bin/$(TARGET) \
 		-I$(VULKAN_INCLUDE_PATH) \
 		-L$(VULKAN_LIBRARY_PATH) \
 		-l$(VULKAN_LIBRARY) \
