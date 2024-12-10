@@ -1,14 +1,15 @@
 #include "vulkan/vulkan_core.h"
 #include <cstdint>
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <optional>
+#include <ostream>
 #include <set>
 #include <stdexcept>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
 #include <vulkan/vulkan_beta.h>
 
 const uint32_t WIDTH = 800;
@@ -64,6 +65,22 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance,
   if (func != nullptr) {
     func(instance, debugMessenger, pAllocator);
   }
+}
+
+static std::vector<char> readFile(const std::string &filename) {
+  std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+  if (!file.is_open()) {
+    throw std::runtime_error("failed to open file!");
+  }
+
+  size_t fileSize = (size_t)file.tellg();
+  std::vector<char> buffer(fileSize);
+
+  file.seekg(0);
+  file.read(buffer.data(), fileSize);
+  file.close();
+  return buffer;
 }
 
 class HelloTriangleApplication {
@@ -214,6 +231,67 @@ private:
     createLogicalDevice();
     createSwapChain();
     createImageView();
+    createGraphicsPipeline();
+  }
+
+  VkShaderModule createShaderModule(const std::vector<char> &code) {
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = code.size();
+    createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
+
+    VkShaderModule shaderModule;
+    if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) !=
+        VK_SUCCESS) {
+      throw std::runtime_error("failed to create shader module!");
+    }
+
+    return shaderModule;
+  }
+
+  void createGraphicsPipeline() {
+    auto vertShaderCode = readFile("src/shaders/vert.spv");
+    auto fragShaderCode = readFile("src/shaders/frag.spv");
+
+    /*std::cout << "Vert: " << vertShaderCode.size() << std::endl;*/
+    /*std::cout << "Frag: " << fragShaderCode.size() << std::endl;*/
+    VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
+    VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+
+    // Note from tutorial:
+    // There is one more (optional) member, pSpecializationInfo, which we won't
+    // be using here, but is worth discussing. It allows you to specify values
+    // for shader constants. You can use a single shader module where its
+    // behavior can be configured at pipeline creation by specifying different
+    // values for the constants used in it. This is more efficient than
+    // configuring the shader using variables at render time, because the
+    // compiler can do optimizations like eliminating if statements that depend
+    // on these values
+
+    VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+    vertShaderStageInfo.sType =
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageInfo.module = vertShaderModule;
+    vertShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+    fragShaderStageInfo.sType =
+        VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageInfo.module = fragShaderModule;
+    fragShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo,
+                                                      fragShaderStageInfo};
+
+    // Note from tutorial:
+    // The compilation and linking of the SPIR-V bytecode to machine code for
+    // execution by the GPU doesn't happen until the graphics pipeline is
+    // created. That means that we're allowed to destroy the shader modules
+    // again as soon as pipeline creation is finished
+    vkDestroyShaderModule(device, fragShaderModule, nullptr);
+    vkDestroyShaderModule(device, vertShaderModule, nullptr);
   }
 
   void createImageView() {
