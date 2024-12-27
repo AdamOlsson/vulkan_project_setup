@@ -9,13 +9,16 @@ BREW_INCLUDE_PATH = $(BREW_PATH)/include
 BREW_LIBRARY_PATH = $(BREW_PATH)/lib
 GLFW_LIBRARY = glfw 
 
+LOCAL_INCLUDE_PATH = /
+
 TARGET = main
-SRC = src/main.cpp
+SRC = src/main.cpp src/graphics_context.cpp
 
 CXXFLAGS = $(CXX_INCLUDE) -std=c++17 -Wall 
 
 $(TARGET): $(SRC)
 	$(CXX) $(CXXFLAGS) $(SRC) -o bin/$(TARGET) \
+		-I$(LOCAL_INCLUDE_PATH) \
 		-I$(VULKAN_INCLUDE_PATH) \
 		-L$(VULKAN_LIBRARY_PATH) \
 		-l$(VULKAN_LIBRARY) \

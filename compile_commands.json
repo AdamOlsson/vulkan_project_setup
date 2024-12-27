@@ -5,7 +5,7 @@
       "-c",
       "-std=c++17",
       "-Wall",
-      "-O2",
+      "-I/",
       "-I/Users/adamolsson/VulkanSDK/1.3.296.0/macOS/include",
       "-I/opt/homebrew/include",
       "-o",
@@ -14,6 +14,23 @@
     ],
     "directory": "/Users/adamolsson/projects/vulkan_test",
     "file": "/Users/adamolsson/projects/vulkan_test/src/main.cpp",
+    "output": "/Users/adamolsson/projects/vulkan_test/bin/main"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++17",
+      "-Wall",
+      "-I/",
+      "-I/Users/adamolsson/VulkanSDK/1.3.296.0/macOS/include",
+      "-I/opt/homebrew/include",
+      "-o",
+      "bin/main",
+      "src/graphics_context.cpp"
+    ],
+    "directory": "/Users/adamolsson/projects/vulkan_test",
+    "file": "/Users/adamolsson/projects/vulkan_test/src/graphics_context.cpp",
     "output": "/Users/adamolsson/projects/vulkan_test/bin/main"
   }
 ]
